@@ -31,7 +31,6 @@ const Login: React.FC = () => {
     try {
       const newToken = await loginApi(email, password);
       if (typeof newToken === "string") {
-        console.log(newToken);
         // Call the parent component's callback function to pass the token
         tokenContext.setToken(newToken);
       } else {

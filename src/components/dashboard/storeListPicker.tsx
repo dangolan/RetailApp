@@ -9,33 +9,49 @@ import {
 } from "@ionic/react";
 import { getStoreListApi } from "../../api/storeList";
 import { TokenContext } from "../../pages/Home";
-import SellingChart from "./SelingChart";
-import GraphForSelling from "./graphCard";
-import Ap from "./Ap";
+import { getDataApi } from "../../api/getData";
+import GraphForSelling from "./CardForDateChart";
 
 const StoresPicker = () => {
   const tokenContext = React.useContext(TokenContext);
   const token = tokenContext.token;
-  const [stores, setStores] = useState([]);
-  const [selectedStore, setSelectedStore] = useState(null);
+  const [stores, setStores] = useState<any[]>([]); // Fix for Problem 1
+  const [selectedStoreValue, setSelectedStoreValue] = useState<number | null>(
+    null
+  );
+  const [selectedStoreName, setSelectedStoreName] = useState<string | null>(
+    null
+  );
   const [showPicker, setShowPicker] = useState(false);
 
   // Fetch the list of stores when the component mounts
   useEffect(() => {
     async function fetchStores() {
       try {
-        const storeList = await getStoreListApi(token, (store: any) => store.has_carts);
+        const storeList = await getStoreListApi(
+          token,
+          (store: any) => store.has_carts
+        );
         setStores(storeList);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to fetch stores:", error);
+        console.log("token expired");
+
+        if(error.message === "Request failed with status 401"){
+          console.log("token expired");
+          tokenContext.setToken(null);
+
+        }
       }
     }
 
     fetchStores();
   }, [token]);
 
-  const handlePickerSelect = (value: any) => {
-    setSelectedStore(value);
+
+  const handlePickerSelect = (value: any, name: any) => {
+    setSelectedStoreValue(value);
+    setSelectedStoreName(name);
   };
 
   const handleShowPicker = () => {
@@ -51,9 +67,7 @@ const StoresPicker = () => {
       <IonGrid className="ion-text-center">
         <IonRow className="ion-align-items-center">
           <IonCol size="12">
-            <IonButton expand="full" onClick={handleShowPicker}>
-              Select a Store
-            </IonButton>
+            <IonButton expand="full" onClick={handleShowPicker}>בחר סניף            </IonButton>
           </IonCol>
           <IonCol size="12">
             <IonPicker
@@ -69,13 +83,16 @@ const StoresPicker = () => {
               ]}
               buttons={[
                 {
-                  text: "Cancel",
+                  text: "ביטול",
                   handler: handleDismissPicker,
                 },
                 {
-                  text: "Confirm",
+                  text: "אישור",
                   handler: (selectedValues) => {
-                    handlePickerSelect(selectedValues.storeName.value);
+                    handlePickerSelect(
+                      selectedValues.storeName.value,
+                      selectedValues.storeName.text
+                    );
                     handleDismissPicker();
                   },
                 },
@@ -84,8 +101,8 @@ const StoresPicker = () => {
           </IonCol>
           <IonCol size="12">
             <div>
-            <p>Selected Store: {selectedStore}</p>
-            <GraphForSelling />
+                <p>סניף : {selectedStoreName}</p>
+                {selectedStoreValue && <GraphForSelling storeID={selectedStoreValue} />}
             </div>
           </IonCol>
         </IonRow>

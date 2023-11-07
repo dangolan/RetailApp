@@ -1,12 +1,18 @@
-export async function getStoreListApi(token: string, filterCriteria: (store: any) => boolean): Promise<any> {
+export async function getStoreListApi(
+  token: string,
+  filterCriteria: (store: any) => boolean
+): Promise<any> {
   try {
-    const response = await fetch("https://retailin-demo.westeurope.cloudapp.azure.com/store/list", {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      "https://retailin-demo.westeurope.cloudapp.azure.com/store/list",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       // Handle non-successful responses here, e.g., throw an error
@@ -20,7 +26,6 @@ export async function getStoreListApi(token: string, filterCriteria: (store: any
 
     return filteredStores;
   } catch (error) {
-    console.error("Error during store list fetch:", error);
-    return null; // Return null or handle the error as needed
+    throw error;
   }
 }

@@ -6,8 +6,15 @@ import {
   useIonViewWillEnter,
   useIonViewWillLeave,
 } from "@ionic/react";
+import React from "react";
 
-const Graph: React.FC = () => {
+// Define the GraphProps interface to specify the expected props
+interface GraphProps {
+  labels: string[];
+  data: number[] | null;
+}
+
+const Graph: React.FC<GraphProps> = ({ labels, data }) => {
   useIonViewWillEnter(() => {
     ChartJS.register(CategoryScale);
   }, []);
@@ -16,16 +23,16 @@ const Graph: React.FC = () => {
     ChartJS.unregister(CategoryScale);
   }, []);
 
-  const data = {
-    labels: ["Billable", "Non Billable","ffff"],
+  const chartData = {
+    labels: labels,
     datasets: [
       {
         label: "",
-        backgroundColor: ["#36a2eb", "rgba(255,99,132,0.2)" , "rgba(66,99,2,0.2)"],
+        backgroundColor: ["#F9786D", "#7FF9F7"],
         borderWidth: 1,
         hoverBackgroundColor: "rgba(255,99,132,0.4)",
         hoverBorderColor: "rgba(255,99,132,1)",
-        data: [65, 59, 130],
+        data: data,
       },
     ],
   };
@@ -33,7 +40,7 @@ const Graph: React.FC = () => {
   return (
     <>
       <IonTitle>גרף מכירות</IonTitle>
-      <Bar data={data} />
+      <Bar data={chartData} />
     </>
   );
 };
